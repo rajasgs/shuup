@@ -4,6 +4,12 @@ FROM node:12.21.0-buster-slim as base
 LABEL maintainer="Eero Ruohola <eero.ruohola@shuup.com>"
 
 RUN apt-get update \
+    && apt-get -y install build-essential
+
+RUN apt-get update \
+    && apt-get -y install libpq-dev python-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev libffi-dev libjpeg-dev zlib1g-dev
+
+RUN apt-get update \
     && apt-get --assume-yes install \
         libpangocairo-1.0-0 \
         python3 \
@@ -21,7 +27,8 @@ WORKDIR /app
 # The default value of 0 just installs the demo for running.
 ARG editable=0
 
-RUN if [ "$editable" -eq 1 ]; then pip3 install -r requirements-tests.txt && python3 setup.py build_resources; else pip3 install shuup; fi
+# RUN if [ "$editable" -eq 1 ]; then pip3 install -r requirements-tests.txt && python3 setup.py build_resources; else pip3 install shuup; fi
+RUN pip3 install -r requirements-tests.txt && python3 setup.py build_resources;
 
 RUN python3 -m shuup_workbench migrate
 RUN python3 -m shuup_workbench shuup_init
